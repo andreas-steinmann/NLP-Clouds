@@ -27,9 +27,13 @@ def main():
     # Funktion „saubere“ Texte aufrufen
     df['cleaned_narrative'] = df['narrative'].apply(clean_text)
 
+    # "saubere" Texte einlesen
+    cleaned_texts = [text.split() for text in df['cleaned_narrative'] if text.strip()]
+    
     # Austesten
     print(df.head(20))
     print(stop_words)
+    print(cleaned_texts)
 
 if __name__ == '__main__':
     main()
