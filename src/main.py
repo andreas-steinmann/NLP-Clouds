@@ -7,6 +7,7 @@ from gensim.models import CoherenceModel, LdaMulticore
 import time
 import os
 import matplotlib.pyplot as plt
+from wordcloud import WordCloud
 
 def main():
     # Datensatz
@@ -14,6 +15,7 @@ def main():
 
     # Output Pfade
     output_path = 'output/'
+    wordcloud_output_path = 'output/wordclouds/'
 
     # Pandas - CSV in DataFrame einlesen
     df = pd.read_csv(file_path)
@@ -90,7 +92,7 @@ def main():
     optimal_k = k_values[coherence_scores.index(max(coherence_scores))]
     print(f'Der optimale Wert für K ist: {optimal_k}')
     
-    # Visualize the coherence scores
+    # Coherence scores visualisieren
     plt.plot(k_values, coherence_scores)
     plt.xlabel('Anzahl Themen (K)')
     plt.ylabel('Coherence Score')
@@ -111,5 +113,24 @@ def main():
     )
     print("Endgültiges LDA-Modell trainiert.")
     
+
+    # Funktion zum generieren von Wortwolken (LDA)
+    def save_word_cloud_gensim(model, num_topics):
+        for topic_idx in range(num_topics):
+            top_words = [word for word, prob in model.show_topic(topic_idx, topn=10)]
+            top_words_str = " ".join(top_words)
+            wordcloud = WordCloud(width=1200, height=800, background_color='white').generate(top_words_str)
+            plt.figure(figsize=(10, 5))
+            plt.imshow(wordcloud, interpolation='bilinear')
+            plt.axis("off")
+            plt.title(f"Wortwolke für Thema {topic_idx}")
+            output_file = os.path.join(wordcloud_output_path, f'lda_optimal_topic_{topic_idx}.png')
+            plt.savefig(output_file)
+            plt.close()
+    
+    # Funktion Wortwolken aufrufen
+    save_word_cloud_gensim(final_lda_model, optimal_k)
+
+
 if __name__ == '__main__':
     main()
