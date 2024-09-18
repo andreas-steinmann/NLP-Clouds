@@ -5,10 +5,15 @@ import re
 from gensim import corpora
 from gensim.models import CoherenceModel, LdaMulticore
 import time
+import os
+import matplotlib.pyplot as plt
 
 def main():
     # Datensatz
     file_path = 'data/complaints_processed.csv'
+
+    # Output Pfade
+    output_path = 'output/'
 
     # Pandas - CSV in DataFrame einlesen
     df = pd.read_csv(file_path)
@@ -81,5 +86,30 @@ def main():
         coherence_scores.append(coherence_score)
         print(f'K: {k}, Coherence Score: {coherence_score}')
 
+    # Den optimalen K-Wert finden
+    optimal_k = k_values[coherence_scores.index(max(coherence_scores))]
+    print(f'Der optimale Wert für K ist: {optimal_k}')
+    
+    # Visualize the coherence scores
+    plt.plot(k_values, coherence_scores)
+    plt.xlabel('Anzahl Themen (K)')
+    plt.ylabel('Coherence Score')
+    plt.title('Coherence Score auf die Anzahl Themen')
+    plt.savefig(os.path.join(output_path, 'coherence_scores.png'))
+    plt.close()
+
+    # Finales LDA-Modell trainieren basierend auf dem optimalen K
+    print(f"Training des finalen LDA-Modells mit k={optimal_k}...")
+    final_lda_model = LdaMulticore(
+        corpus=corpus,
+        num_topics=optimal_k,
+        id2word=id2word,
+        passes=passes,
+        iterations=iterations,
+        random_state=42,
+        workers=workers
+    )
+    print("Endgültiges LDA-Modell trainiert.")
+    
 if __name__ == '__main__':
     main()
