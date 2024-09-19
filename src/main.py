@@ -3,11 +3,13 @@ import nltk
 from nltk.corpus import stopwords
 import re
 from gensim import corpora
-from gensim.models import CoherenceModel, LdaMulticore
+from gensim.models import CoherenceModel, LdaMulticore, Word2Vec
 import time
 import os
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
+import numpy as np
+from sklearn.cluster import KMeans
 
 def main():
     # Datensatz
@@ -131,6 +133,44 @@ def main():
     # Funktion Wortwolken aufrufen
     save_word_cloud_gensim(final_lda_model, optimal_k)
 
+    # Word2Vec-Modell trainieren
+    print("Training des Word2Vec-Modells")
+    word2vec_model = Word2Vec(sentences=cleaned_texts, vector_size=100, window=5, min_count=2, workers=workers)
+    print("Word2Vec-Modell trainiert.")
+    
+    # Funktion zur Berechnung von Dokumentvektoren
+    def document_vector(model, doc):
+        doc = [word for word in doc if word in model.wv]
+        if len(doc) == 0:
+            return np.zeros(model.vector_size)
+        return np.mean(model.wv[doc], axis=0)
+    
+    # Berechnung von Dokumentvektoren
+    print("Berechnung von Dokumentenvektoren")
+    word2vec_vectors = np.array([document_vector(word2vec_model, text) for text in cleaned_texts])
+    
+    # Dokumente mithilfe von KMeans clustern
+    num_clusters = 5  # Wert kann adaptiert weden
+    print(f"Clustering von Dokumenten in {num_clusters} Clustern mit KMeans.")
+    kmeans = KMeans(n_clusters=num_clusters, random_state=42)
+    df['word2vec_cluster'] = kmeans.fit_predict(word2vec_vectors)
+    print("Clustering abgeschlossen.")
+    
+    # Funktion zum generieren von Wortwolken (Word2Vec-Cluster)
+    for cluster in range(num_clusters):
+        cluster_texts = ' '.join(df[df['word2vec_cluster'] == cluster]['cleaned_narrative'])
+        wordcloud = WordCloud(width=1200, height=800, background_color="white").generate(cluster_texts)
+        plt.figure(figsize=(10, 5))
+        plt.imshow(wordcloud, interpolation='bilinear')
+        plt.axis("off")
+        plt.title(f"Wortwolke für Word2Vec-Cluster {cluster}")
+        output_file = os.path.join(wordcloud_output_path, f"word2vec_cluster_{cluster}.png")
+        plt.savefig(output_file)
+        plt.close()
+    
+    print("Wortwolken für Word2Vec-Cluster gespeichert.")
+    print("Die Wortwolken sind im Ordner output/wordclouds einsehbar.")
+    
 
 if __name__ == '__main__':
     main()
