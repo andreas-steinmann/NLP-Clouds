@@ -1,2 +1,7 @@
 pandas
 nltk
+urllib3
+gensim
+matplotlib
+wordcloud
+scikit-learn
