@@ -119,7 +119,7 @@ def main():
     # Funktion zum generieren von Wortwolken (LDA)
     def save_word_cloud_gensim(model, num_topics):
         for topic_idx in range(num_topics):
-            top_words = [word for word, prob in model.show_topic(topic_idx, topn=10)]
+            top_words = [word for word, prob in model.show_topic(topic_idx, topn=100)]
             top_words_str = " ".join(top_words)
             wordcloud = WordCloud(width=1200, height=800, background_color='white').generate(top_words_str)
             plt.figure(figsize=(10, 5))
