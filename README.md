@@ -13,7 +13,7 @@ Latent Dirichlet Allocation (LDA) neigt dazu, sich auf übergeordnete Themen zu 
 
 | LDA Wortwolke Credit Report | Word2Vec Wortwolke Credit Report |
 | ------- | ------- |
-| ![LDA Wortwolke Credit Report](output/wordclouds/lda_optimal_topic_4.png "LDA Wortwolke Credit Report") | ![Word2Vec Wortwolke Credit Report](output/wordclouds/word2vec_cluster_4.png "Word2Vec Wortwolke Credit Report") |
+| ![LDA Wortwolke Credit Report](output/wordclouds/lda_optimal_topic_1.png "LDA Wortwolke Credit Report") | ![Word2Vec Wortwolke Credit Report](output/wordclouds/word2vec_cluster_4.png "Word2Vec Wortwolke Credit Report") |
 
 ## Abschließende Diskussion:
 Die gemeinsame Verwendung von beiden Ansätzen sorgt für eine Ergänzung. Word2Vec bietet eine detailliertere, kontextbezogenere Analyse der Datensätze, während LDA eher versucht größere, übergeordnete thematische Zusammenhänge aufzuzeigen. Die Modelle können nicht 1 zu 1 miteinander verglichen werden, da sie einen unterschiedlichen Hintergrund besitzen und ein unterschiedliches Ziel verfolgen. Dieses Beispiel zeigt auf, wie wichtig es ist bei einem Projekt nicht nur eine Richtung zu verfolgen, sondern mehrerer Lösungswege zu prüfen. Je nach Anforderung ist somit LDA oder halt Word2Vec besser geeignet.
