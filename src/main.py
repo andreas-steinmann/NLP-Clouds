@@ -9,9 +9,13 @@ import os
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 import numpy as np
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, MiniBatchKMeans
 
 def main():
+
+    # Timer starten für Skriptoptimierung
+    start_timer = time.time()
+
     # Datensatz
     file_path = 'data/complaints_processed.csv'
 
@@ -41,11 +45,6 @@ def main():
 
     # "saubere" Texte einlesen
     cleaned_texts = [text.split() for text in df['cleaned_narrative'] if text.strip()]
-    
-    # Austesten
-    print(df.head(20))
-    print(stop_words)
-    print(cleaned_texts)
 
     # Datensätze für Gensim vorbereiten
     id2word = corpora.Dictionary(cleaned_texts)
@@ -60,9 +59,9 @@ def main():
     model_list = []
     
     # LDA Parameter 
-    passes = 10
-    iterations = 50
-    workers = 4
+    passes = 5
+    iterations = 20
+    workers = 8
     
     # LDA-Modelle trainieren und berechnen von Coherence Score
     for k in k_values:
@@ -152,7 +151,7 @@ def main():
     # Dokumente mithilfe von KMeans clustern
     num_clusters = 5  # Wert kann adaptiert weden
     print(f"Clustering von Dokumenten in {num_clusters} Clustern mit KMeans.")
-    kmeans = KMeans(n_clusters=num_clusters, random_state=42)
+    kmeans = MiniBatchKMeans(n_clusters=num_clusters, random_state=42, batch_size=1000)
     df['word2vec_cluster'] = kmeans.fit_predict(word2vec_vectors)
     print("Clustering abgeschlossen.")
     
@@ -170,6 +169,10 @@ def main():
     
     print("Wortwolken für Word2Vec-Cluster gespeichert.")
     print("Die Wortwolken sind im Ordner output/wordclouds einsehbar.")
+
+    # Timer beenden für Skriptoptimierung
+    end_timer = time.time()
+    print(f"Skript lief in {end_timer - start_timer:.2f} Sekunden.")
     
 
 if __name__ == '__main__':
